@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Input from './Input';
 import TaskList from './TaskList';
+import StatusBar from './StatusBar';
 
 class App extends Component {
   constructor(props) {
@@ -8,6 +9,7 @@ class App extends Component {
 
     this.state = {
       term: '',
+      filter: 'all',
       tasks: [
         { id: 1, name: 'Taste Javascript', done: true },
         { id: 2, name: 'Buy a unicorn', done: false }
@@ -72,7 +74,27 @@ class App extends Component {
     this.setState({ allCompleted, tasks });
   }
 
+  clearCompleted() {
+    const tasks = this.state.tasks.filter(task => !task.done);
+    this.setState({ tasks, allCompleted: false });
+  }
+
+  changeFilter(filter) {
+    this.setState({ filter });
+  }
+
   render() {
+    const { filter } = this.state; 
+    const itemsLeft = this.state.tasks.filter(task => !task.done).length;
+    const tasksQuantity = this.state.tasks.length;
+    let tasks = this.state.tasks.slice();
+
+    if (filter === 'active')
+      tasks = tasks.filter(task => !task.done);
+    
+    if (filter === 'completed')
+      tasks = tasks.filter(task => task.done);
+
     return (
       <div className="App">
         <header className="header">
@@ -84,11 +106,19 @@ class App extends Component {
         </header>
         
         <TaskList
-          tasks={this.state.tasks}
+          tasks={tasks}
+          allCompleted={this.state.allCompleted}
           onTaskRemove={id => this.removeTask(id)}
           onTaskComplete={id => this.completeTask(id)}
           onTaskRename={(id, name) => this.renameTask(id, name)}
           onToggleAll={() => this.toggleAll()} />
+
+        <StatusBar
+          quantity={tasksQuantity}
+          itemsLeft={itemsLeft}
+          filter={this.state.filter}
+          onChangeFilter={type => this.changeFilter(type)}
+          onClearCompleted={() => this.clearCompleted()} />
       </div>
     );
   }

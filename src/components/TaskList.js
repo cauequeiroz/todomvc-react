@@ -4,6 +4,7 @@ import TaskListItem from './TaskListItem';
 const TaskList = props => {
   const {
     tasks,
+    allCompleted,
     onTaskRemove,
     onTaskComplete,
     onTaskRename,
@@ -12,12 +13,18 @@ const TaskList = props => {
 
   return (
     <section className="main">
-      <input
-        id="toggle-all"
-        className="toggle-all"
-        type="checkbox"
-        onChange={() => onToggleAll()} />
-      <label htmlFor="toggle-all">Mark all as complete</label>
+      {
+        !!tasks.length &&
+        <div>
+          <input
+            id="toggle-all"
+            className="toggle-all"
+            type="checkbox"
+            checked={allCompleted}
+            onChange={() => onToggleAll()} />
+          <label htmlFor="toggle-all">Mark all as complete</label>
+        </div>
+      }
       <ul className="todo-list">
         {tasks.map((task, index) => (
           <TaskListItem
