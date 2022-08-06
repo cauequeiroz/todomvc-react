@@ -1,51 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import CreateTaskInput from './components/CreateTaskInput';
 import TaskList from './components/TaskList';
 import StatusBar from './components/StatusBar';
 
-import { Filters } from './types';
-import useTaskManager from './hooks/useTaskManager';
+import useTasksSelector from './store/tasks/selectors';
 
 function App() {
-  const [filter, setFilter] = useState<Filters>(Filters.ALL);
-  const [
-    hasTasks,
-    numberOfUncompletedTasks,
-    getFilteredTasks,
-    handleComplete,
-    handleCompleteAll,
-    handleCreateTask,
-    handleEditTask,
-    handleRemoveTask,
-    handleRemoveCompletedTasks   
-  ] = useTaskManager(filter);  
+  const { hasTasks } = useTasksSelector();
 
   return (
     <>
       <section className="todoapp">
         <header className="header">
           <h1>todo list</h1>
-          <CreateTaskInput onCreateTask={handleCreateTask} />
+          <CreateTaskInput />
         </header>
 
         {hasTasks && (
           <>
-            <TaskList
-              tasks={getFilteredTasks()}
-              numberOfUncompletedTasks={numberOfUncompletedTasks}
-              onComplete={handleComplete}
-              onCompleteAll={handleCompleteAll}
-              onEdit={handleEditTask}
-              onRemove={handleRemoveTask}
-            />
-
-            <StatusBar
-              numberOfUncompletedTasks={numberOfUncompletedTasks}
-              currentFilter={filter}
-              onChangeCurrentFilter={filter => setFilter(filter)}
-              onRemoveComplete={handleRemoveCompletedTasks}
-            />
+            <TaskList />
+            <StatusBar />
           </>
         )}
       </section>

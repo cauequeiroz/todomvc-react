@@ -1,51 +1,49 @@
 import React from 'react';
-import { Filters } from '../../types';
+import { FiltersActions } from '../../store/filters/actions';
+import { Filters } from '../../store/filters/reducer';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { TasksActions } from '../../store/tasks/actions';
+import useTasksSelector from '../../store/tasks/selectors';
 
-type StatusBarProps = {
-  numberOfUncompletedTasks: number;
-  currentFilter: Filters;
-  onChangeCurrentFilter: (filter: Filters) => void;
-  onRemoveComplete: () => void;
-}
 
-function StatusBar({
-  numberOfUncompletedTasks,
-  currentFilter,
-  onChangeCurrentFilter,
-  onRemoveComplete
-}: StatusBarProps) {
+function StatusBar() {
+  const dispatch = useAppDispatch();
+  const currentFilter = useAppSelector(state => state.filter.current);
+  const { numberOfUncompletedTasks, numberOfCompletedTasks } = useTasksSelector();
 
   return (
     <footer className="footer">
-      <span className="todo-count"><strong>{numberOfUncompletedTasks}</strong> item left</span>
+      <span className="todo-count">
+        <strong>{numberOfUncompletedTasks}</strong> item left
+      </span>
       <ul className="filters">
         <li>
           <a
             className={currentFilter === Filters.ALL ? 'selected': ''}
-            onClick={() => onChangeCurrentFilter(Filters.ALL)}
+            onClick={() => dispatch(FiltersActions.changeToAll())}
             href="#/"
           >All</a>
         </li>
         <li>
           <a
             className={currentFilter === Filters.ACTIVE ? 'selected': ''}
-            onClick={() => onChangeCurrentFilter(Filters.ACTIVE)}
+            onClick={() => dispatch(FiltersActions.changeToActive())}
             href="#/active"
           >Active</a>
         </li>
         <li>
           <a
             className={currentFilter === Filters.COMPLETED ? 'selected': ''}
-            onClick={() => onChangeCurrentFilter(Filters.COMPLETED)}
+            onClick={() => dispatch(FiltersActions.changeToCompleted())}
             href="#/completed"
           >Completed</a>
         </li>
       </ul>
 
-      {numberOfUncompletedTasks > 0 && (
+      {numberOfCompletedTasks > 0 && (
         <button
           className="clear-completed"
-          onClick={onRemoveComplete}
+          onClick={() => dispatch(TasksActions.removeCompletedTasks())}
         >Clear completed</button>
       )}
     </footer>

@@ -1,17 +1,16 @@
 import React, { useState, KeyboardEvent } from 'react';
+import { useAppDispatch } from '../../store/hooks';
+import { TasksActions } from '../../store/tasks/actions';
 
-type HeaderProps = {
-  onCreateTask: (text: string) => void;
-};
-
-function CreateTaskInput({ onCreateTask }: HeaderProps) {
+function CreateTaskInput() {
+  const dispatch = useAppDispatch();
   const [value, setValue] = useState<string>("");
 
   const handleSubmit = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter") return;
     if (value.length === 0) return;
 
-    onCreateTask(value);
+    dispatch(TasksActions.createTask(value));
     setValue("");
   };
 

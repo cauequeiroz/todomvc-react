@@ -1,26 +1,23 @@
 import React, { useState, KeyboardEvent } from 'react';
-import { ITask } from '../../types';
+import { useDispatch } from 'react-redux';
+import { TasksActions } from '../../store/tasks/actions';
+import { TaskItem } from '../../store/tasks/reducer';
 
 type TaskProps = {
-  task: ITask;
-  onComplete: (id: number, isDone: boolean) => void;
-  onEdit: (id: number, text: string ) => void;
-  onRemove: (id: number) => void;
+  task: TaskItem;
 };
 
-function Task({
-  task,
-  onComplete,
-  onEdit,
-  onRemove
-}: TaskProps) {
+function Task({ task }: TaskProps) {
+  const dispatch = useDispatch();
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newText, setNewText] = useState<string>(task.text);
 
   const handleEditSubmit = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter") return;
     if (newText.length === 0) return;
-    onEdit(task.id, newText);
+
+    dispatch(TasksActions.editTask({ id: task.id, text: newText }));
     setIsEditing(false);
   };
 
@@ -31,12 +28,12 @@ function Task({
           className="toggle"
           type="checkbox"
           checked={task.isDone}
-          onChange={() => onComplete(task.id, !task.isDone)}
+          onChange={() => dispatch(TasksActions.completeTask({ id: task.id, isDone: !task.isDone }))}
         />
         <label onDoubleClick={() => setIsEditing(true)}>{task.text}</label>
         <button
           className="destroy"
-          onClick={() => onRemove(task.id)}
+          onClick={() => dispatch(TasksActions.removeTask(task.id))}
         ></button>
       </div>
 
